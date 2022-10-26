@@ -25,8 +25,11 @@ with open('tokenizer.pickle', 'rb') as handle:
     tokenizer = pickle.load(handle)
 
 # carregando o modelo
-pesos = "product_rnn.h5"
-model = tf.keras.models.load_model(pesos)
+@st.cache(allow_output_mutation=True)
+def load_model():
+    model = tf.keras.models.load_model("product_rnn.h5")
+    return model
+model = load_model()
 
 # Dimensão do Embbeding.
 EMBEDDING_DIM = 100
@@ -64,10 +67,10 @@ if btn_predict:
   padded = pad_sequences(seq, maxlen=MAX_SEQUENCE_LENGTH)
   pred = model.predict(padded)
   st.header(f'Segmento:')
-  st.text(f'{label_segmento[np.argmax(pred[0])]}')
+  st.text(label_segmento[np.argmax(pred[0])])
   st.header('Categoria:')
-  st.text(f'{label_categoria[np.argsort(pred[1].flatten())[::-1]][:3]}')
+  st.text(label_categoria[np.argsort(pred[1].flatten())[::-1]][:3])
   st.header('Subcategoria:')
-  st.text(f'{label_subcategoria[np.argsort(pred[2].flatten())[::-1]][:5]}')
+  st.text(label_subcategoria[np.argsort(pred[2].flatten())[::-1]][:5])
   st.header('Produto:')
-  st.text(f'{label_produto[np.argsort(pred[3].flatten())[::-1]][:5]}')
+  st.text(label_produto[np.argsort(pred[3].flatten())[::-1]][:5])
