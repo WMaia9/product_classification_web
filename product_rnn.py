@@ -20,7 +20,7 @@ label_categoria = np.sort(np.array(produtos['categoria']))
 label_subcategoria = np.sort(np.array(produtos['subcategoria']))
 label_produto = np.sort(np.array(produtos['produto']))
 
-# Abringo o Tokenizador
+# Abrindo o Tokenizador
 with open('tokenizer.pickle', 'rb') as handle:
     tokenizer = pickle.load(handle)
 
@@ -29,6 +29,7 @@ with open('tokenizer.pickle', 'rb') as handle:
 def load_model():
     model = tf.keras.models.load_model("product_rnn.h5")
     return model
+    
 model = load_model()
 
 # Dimensão do Embbeding.
@@ -49,8 +50,8 @@ st.text(" ")
 st.text(" ")
 
 # CREATE ADDRESS
-st.sidebar.header('User Input Features')
-text = st.sidebar.text_input("Product Name", 'Biscoito de Chocolate')
+st.sidebar.header('Entrada do Texto')
+text = st.sidebar.text_input("Nome do Item", 'Biscoito de Chocolate')
 
 # Função para limpar o dataset
 def remove_stopwords(sentence):
