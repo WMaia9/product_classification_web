@@ -51,7 +51,7 @@ st.text(" ")
 
 # CREATE ADDRESS
 st.sidebar.header('Entrada do Texto')
-text = st.sidebar.text_input("Nome do Item", 'Biscoito de Chocolate')
+text = st.sidebar.text_input("NOME DO ITEM", 'Biscoito de Chocolate')
 
 # Função para limpar o dataset
 def remove_stopwords(sentence):
@@ -60,7 +60,7 @@ def remove_stopwords(sentence):
 
   return sentence
 
-btn_predict = st.sidebar.button("REALIZAR PREDIÇÃO")
+btn_predict = st.sidebar.button("REALIZAR CASSIFICAÇÃO")
 
 if btn_predict:
   new_complaint = remove_stopwords(text)
