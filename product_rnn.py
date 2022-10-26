@@ -47,7 +47,7 @@ st.text(" ")
 
 # CREATE ADDRESS
 st.sidebar.header('User Input Features')
-text = st.sidebar.text_input("Product Name", 'Macarrão')
+text = st.sidebar.text_input("Product Name", 'Biscoito de Chocolate')
 
 # Função para limpar o dataset
 def remove_stopwords(sentence):
