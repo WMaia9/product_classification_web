@@ -72,6 +72,6 @@ if btn_predict:
   st.header('Categoria:')
   st.text(label_categoria[np.argsort(pred[1].flatten())[::-1]][:3])
   st.header('Subcategoria:')
-  st.text(label_subcategoria[np.argsort(pred[2].flatten())[::-1]][:5])
+  st.text(label_subcategoria[np.argsort(pred[2].flatten())[::-1]][:3])
   st.header('Produto:')
   st.text(label_produto[np.argsort(pred[3].flatten())[::-1]][:5])
