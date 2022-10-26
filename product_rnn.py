@@ -49,7 +49,7 @@ st.image(img)
 st.text(" ")
 st.text(" ")
 
-# CREATE ADDRESS
+# Texto do item
 st.sidebar.header('Entrada do Texto')
 text = st.sidebar.text_input("NOME DO ITEM", 'Biscoito de Chocolate')
 
