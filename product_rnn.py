@@ -1,4 +1,5 @@
 import streamlit as st
+st.set_page_config(layout='wide')
 import numpy as np
 import pandas as pd
 import json
@@ -43,10 +44,11 @@ st.text(" ")
 st.text(" ")
 
 # Texto do item
-st.sidebar.header('Entrada do Texto')
-text = st.sidebar.text_input("NOME DO ITEM", 'Biscoito de Chocolate')
+st.sidebar.header('UNIVERSIDADE DE SÃO PAULO')
+#text = st.sidebar.text_input("NOME DO ITEM", 'Biscoito de Chocolate')
+text = st.text_input("NOME DO ITEM", 'Biscoito de Chocolate')
 
-btn_predict = st.sidebar.button("REALIZAR CASSIFICAÇÃO")
+btn_predict = st.button("REALIZAR CASSIFICAÇÃO")
 
 if btn_predict:
     new_complaint = pre_process.transform(text)
