@@ -31,7 +31,6 @@ with open('tokenizer.pickle', 'rb') as handle:
 def load_model():
     model = tf.keras.models.load_model("full_MultiModel2.h5")
     return model
-    
 model = load_model()
 
 # Número máximo que sequência que a rede neural irá utilizar
@@ -39,7 +38,7 @@ MAX_SEQUENCE_LENGTH = 15
 
 st.title('Catalogador de Produtos')
 
-img = Image.open('IMG_0058.jpeg')
+img = Image.open('IMG_0059.jpeg')
 st.image(img)
 
 st.text(" ")
@@ -47,6 +46,8 @@ st.text(" ")
 
 # Texto do item
 st.sidebar.header('UNIVERSIDADE DE SÃO PAULO')
+usp = Image.open('IMG_0058.jpeg')
+st.sidebar.image(usp)
 #text = st.sidebar.text_input("NOME DO ITEM", 'Biscoito de Chocolate')
 text = st.text_input("NOME DO ITEM", 'Biscoito de Chocolate')
 
