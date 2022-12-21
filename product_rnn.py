@@ -1,24 +1,26 @@
 import streamlit as st
 import numpy as np
-import re
+import pandas as pd
 import json
 import tensorflow as tf
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import Model
 import tensorflow_addons as tfa
+from pre_treatment_product import pre_process_text
 import pickle
 from PIL import Image
 
-# ler o json
+pre_process = pre_process_text(stopwords_language='portuguese')
+# ler as categorias
 with open('product.json', 'r') as myfile:
     data=myfile.read()
 produtos = json.loads(data)
 
-label_segmento = np.sort(np.array(produtos['segmento']))
-label_categoria = np.sort(np.array(produtos['categoria']))
-label_subcategoria = np.sort(np.array(produtos['subcategoria']))
-label_produto = np.sort(np.array(produtos['produto']))
+label_segmento = np.array(produtos['segmento'])
+label_categoria = np.array(produtos['categoria'])
+label_subcategoria = np.array(produtos['subcategoria'])
+label_produto = np.array(produtos['nm_product'])
 
 # Abrindo o Tokenizador
 with open('tokenizer.pickle', 'rb') as handle:
@@ -27,19 +29,13 @@ with open('tokenizer.pickle', 'rb') as handle:
 # carregando o modelo
 @st.cache(allow_output_mutation=True)
 def load_model():
-    model = tf.keras.models.load_model("product_rnn.h5")
+    model = tf.keras.models.load_model("full_MultiModel2.h5")
     return model
     
 model = load_model()
 
-# Dimensão do Embbeding.
-EMBEDDING_DIM = 100
-
 # Número máximo que sequência que a rede neural irá utilizar
 MAX_SEQUENCE_LENGTH = 15
-
-# O número máximo de palavras a serem usadas. (mais frequente)
-MAX_NB_WORDS = 28000
 
 st.title('Short Text Product Classification')
 
