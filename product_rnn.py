@@ -46,7 +46,7 @@ st.text(" ")
 
 # Texto do item
 st.sidebar.header('UNIVERSIDADE DE SÃO PAULO')
-usp = Image.open('IMG_0058.jpeg')
+usp = Image.open('IMG_0058.png')
 st.sidebar.image(usp)
 #text = st.sidebar.text_input("NOME DO ITEM", 'Biscoito de Chocolate')
 text = st.text_input("NOME DO ITEM", 'Biscoito de Chocolate')
