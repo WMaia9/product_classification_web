@@ -1,13 +1,15 @@
 import streamlit as st
-st.set_page_config(layout='wide')
 import numpy as np
 import pandas as pd
 import json
 import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+import tensorflow_addons as tfa
 from pre_treatment_product import pre_process_text
 import pickle
 from PIL import Image
+
+st.set_page_config(layout='wide')
 
 pre_process = pre_process_text(stopwords_language='portuguese')
 # ler as categorias
