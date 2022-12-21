@@ -87,16 +87,44 @@ if btnChoose == 'Texto':
 else:
     uploaded_file = st.file_uploader("Carregar o CSV")
     if uploaded_file is not None:
-        df = pd.read_csv(uploaded_file, names=['nm_product'], header=None)
-        st.table(df.head())
-        
+        dt = pd.read_csv(uploaded_file, names=['nm_item'], header=None)
         btn_predict = st.button("REALIZAR CATALOGAÇÃO")
-        
-        df = df.to_csv()
         if btn_predict:
+            def classification(dt):
+                df = pd.DataFrame(
+                    [],
+                    columns=[
+                        'nm_item',
+                        'segmento',
+                        'categoria',
+                        'subcategoria',
+                        'nm_product',
+                    ],
+                )
+                for index, text in dt.iterrows():
+                    text_processed = pre_process.transform(text['nm_item'])
+                    seq = tokenizer.texts_to_sequences([text_processed])
+                    padded = pad_sequences(seq, maxlen=MAX_SEQUENCE_LENGTH)
+                    pred = model.predict(padded)
+                    df = df.append(
+                        {
+                            'nm_item': text['nm_item'],
+                            'segmento': label_segmento[np.argmax(pred[0])],
+                            'categoria': label_categoria[np.argmax(pred[1])],
+                            'subcategoria': label_subcategoria[np.argmax(pred[2])],
+                            'nm_product': label_produto[np.argmax(pred[3])],
+                        },
+                        ignore_index=True,
+                    )
+                return df
+
+            df = classification(dt)
+            downdload = df.to_csv(index='False')
             st.download_button(
-            label="Download data as CSV",
-            data=df,
-            file_name='large_df.csv',
-            mime='text/csv',
-    )
+                label="Download dos items catalogados",
+                data=downdload,
+                file_name='large_df.csv',
+                mime='text/csv',
+            )
+
+            st.table(df)
