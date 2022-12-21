@@ -9,7 +9,7 @@ from pre_treatment_product import pre_process_text
 import pickle
 from PIL import Image
 
-st.set_page_config(layout='wide')
+#st.set_page_config(layout='wide')
 
 pre_process = pre_process_text(stopwords_language='portuguese')
 # ler as categorias
@@ -41,10 +41,10 @@ model = load_model()
 MAX_SEQUENCE_LENGTH = 15
 
 st.title('Catalogador de Produtos')
-
+st.text(" ")
+st.text(" ")
 img = Image.open('IMG_0058.jpeg')
 st.image(img)
-
 st.text(" ")
 st.text(" ")
 
@@ -52,8 +52,9 @@ st.text(" ")
 st.sidebar.header('UNIVERSIDADE DE SÃO PAULO')
 usp = Image.open('IMG_0059.png')
 st.sidebar.image(usp)
+st.sidebar.header('Desenvolvido por alunos do MECAI')
 
-btnChoose = st.selectbox('Tipo', list(['Texto', 'CSV']))
+btnChoose = st.selectbox('FERRAMENTA', list(['Texto', 'CSV']))
 
 if btnChoose == 'Texto':
 
@@ -101,6 +102,7 @@ else:
                         'nm_product',
                     ],
                 )
+                my_bar = st.progress(0)
                 for index, text in dt.iterrows():
                     text_processed = pre_process.transform(text['nm_item'])
                     seq = tokenizer.texts_to_sequences([text_processed])
@@ -116,10 +118,11 @@ else:
                         },
                         ignore_index=True,
                     )
+                    my_bar.progress(index + 1)
                 return df
 
             df = classification(dt)
-            downdload = df.to_csv(index='False')
+            downdload = df.to_csv(index=False)
             st.download_button(
                 label="Download dos items catalogados",
                 data=downdload,
@@ -127,4 +130,4 @@ else:
                 mime='text/csv',
             )
 
-            st.table(df)
+            st.table(df.head(50))
