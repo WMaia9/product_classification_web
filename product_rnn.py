@@ -39,7 +39,7 @@ MAX_SEQUENCE_LENGTH = 15
 
 st.title('Catalogador de Produtos')
 
-img = Image.open('mercado.jpg')
+img = Image.open('IMG_0058.jpg')
 st.image(img)
 
 st.text(" ")
