@@ -3,10 +3,7 @@ import numpy as np
 import pandas as pd
 import json
 import tensorflow as tf
-from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.models import Model
-import tensorflow_addons as tfa
 from pre_treatment_product import pre_process_text
 import pickle
 from PIL import Image
@@ -37,7 +34,7 @@ model = load_model()
 # Número máximo que sequência que a rede neural irá utilizar
 MAX_SEQUENCE_LENGTH = 15
 
-st.title('Short Text Product Classification')
+st.title('Catalogador de Produtos')
 
 img = Image.open('mercado.jpg')
 st.image(img)
@@ -49,25 +46,27 @@ st.text(" ")
 st.sidebar.header('Entrada do Texto')
 text = st.sidebar.text_input("NOME DO ITEM", 'Biscoito de Chocolate')
 
-# Função para limpar o dataset
-def remove_stopwords(sentence):
-  # Converting to Lowercase
-  sentence = sentence.lower()
-
-  return sentence
-
 btn_predict = st.sidebar.button("REALIZAR CASSIFICAÇÃO")
 
 if btn_predict:
-  new_complaint = remove_stopwords(text)
-  seq = tokenizer.texts_to_sequences([new_complaint])
-  padded = pad_sequences(seq, maxlen=MAX_SEQUENCE_LENGTH)
-  pred = model.predict(padded)
-  st.header(f'Segmento:')
-  st.text(label_segmento[np.argmax(pred[0])])
-  st.header('Categoria:')
-  st.text(label_categoria[np.argsort(pred[1].flatten())[::-1]][:3])
-  st.header('Subcategoria:')
-  st.text(label_subcategoria[np.argsort(pred[2].flatten())[::-1]][:3])
-  st.header('Produto:')
-  st.text(label_produto[np.argsort(pred[3].flatten())[::-1]][:5])
+    new_complaint = pre_process.transform(text)
+    seq = tokenizer.texts_to_sequences([new_complaint])
+    padded = pad_sequences(seq, maxlen=MAX_SEQUENCE_LENGTH)
+    pred = model.predict(padded)
+
+    segmento = label_segmento[np.argsort(pred[0].flatten())[::-1]][:5]
+    categoria = label_categoria[np.argsort(pred[1].flatten())[::-1]][:5]
+    subcategoria = label_subcategoria[np.argsort(pred[2].flatten())[::-1]][:5]
+    produto = label_produto[np.argsort(pred[3].flatten())[::-1]][:5]
+
+    # Criando o Data Frame
+    index_labels = ['Top 1', 'Top 2', 'Top 3', 'Top 4', 'Top 5']
+    labels = {
+        'segmento': segmento,
+        'categoria': categoria,
+        'subcategoria': subcategoria,
+        'produto': produto
+    }
+    df_product = pd.DataFrame(labels, index=index_labels)
+
+    st.table(df_product)
