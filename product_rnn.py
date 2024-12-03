@@ -6,7 +6,6 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import tokenizer_from_json
 from pre_treatment_product import pre_process_text
-import pickle
 from PIL import Image
 
 #st.set_page_config(layout='wide')
@@ -17,31 +16,28 @@ with open('product.json', 'r') as myfile:
     data = myfile.read()
 produtos = json.loads(data)
 
-label_segmento = np.array(produtos['segmento'])
-label_categoria = np.array(produtos['categoria'])
-label_subcategoria = np.array(produtos['subcategoria'])
-label_produto = np.array(produtos['nm_product'])
+label_segment = np.array(produtos['segmento'])
+label_category = np.array(produtos['categoria'])
+label_subcategory = np.array(produtos['subcategoria'])
+label_product = np.array(produtos['nm_product'])
 
 # Load the tokenizer
 with open('tokenizer.json', 'r') as json_file:
     tokenizer_json = json_file.read()  # Read the JSON string
 tokenizer = tokenizer_from_json(json.loads(tokenizer_json)) 
 
-# carregando o modelo
-
-
+# Load the model
 @st.cache_resource
 def load_model():
     model = tf.keras.models.load_model("LSTModel.keras")
     return model
 
-
 model = load_model()
 
-# Número máximo que sequência que a rede neural irá utilizar
+# Maximum sequence length the neural network will use
 MAX_SEQUENCE_LENGTH = 15
 
-st.title('Catalogador de Produtos')
+st.title('Product Cataloger')
 st.text(" ")
 st.text(" ")
 img = Image.open('IMG_0058.jpeg')
@@ -49,19 +45,19 @@ st.image(img)
 st.text(" ")
 st.text(" ")
 
-# Texto do item
-st.sidebar.header('UNIVERSIDADE DE SÃO PAULO')
+# Sidebar content
+st.sidebar.header('UNIVERSITY OF SÃO PAULO')
 usp = Image.open('IMG_0059.png')
 st.sidebar.image(usp)
-st.sidebar.header('Desenvolvido por alunos do MECAI')
+st.sidebar.header('Developed by MECAI students')
 
-btnChoose = st.selectbox('FERRAMENTA', list(['Texto', 'CSV']))
+btnChoose = st.selectbox('TOOL', list(['Text', 'CSV']))
 
-if btnChoose == 'Texto':
+if btnChoose == 'Text':
 
-    text = st.text_input("NOME DO ITEM", 'Biscoito de Chocolate')
+    text = st.text_input("ITEM NAME", 'Biscoito de chocolate 200g')
 
-    btn_predict = st.button("REALIZAR CATALOGAÇÃO")
+    btn_predict = st.button("PERFORM CATALOGING")
 
     if btn_predict:
         new_complaint = pre_process.transform(text)
@@ -69,53 +65,53 @@ if btnChoose == 'Texto':
         padded = pad_sequences(seq, maxlen=MAX_SEQUENCE_LENGTH)
         pred = model.predict(padded)
 
-        segmento = label_segmento[np.argsort(pred[0].flatten())[::-1]][:5]
-        categoria = label_categoria[np.argsort(pred[1].flatten())[::-1]][:5]
-        subcategoria = label_subcategoria[np.argsort(pred[2].flatten())[::-1]][:5]
-        produto = label_produto[np.argsort(pred[3].flatten())[::-1]][:5]
+        segment = label_segment[np.argsort(pred[0].flatten())[::-1]][:5]
+        category = label_category[np.argsort(pred[1].flatten())[::-1]][:5]
+        subcategory = label_subcategory[np.argsort(pred[2].flatten())[::-1]][:5]
+        product = label_product[np.argsort(pred[3].flatten())[::-1]][:5]
 
         # Criando o Data Frame
         index_labels = ['Top 1', 'Top 2', 'Top 3', 'Top 4', 'Top 5']
         labels = {
-            'segmento': segmento,
-            'categoria': categoria,
-            'subcategoria': subcategoria,
-            'produto': produto
+            'segment': segment,
+            'category': category,
+            'subcategory': subcategory,
+            'product': product
         }
         df_product = pd.DataFrame(labels, index=index_labels)
 
         st.table(df_product)
         
 else:
-    uploaded_file = st.file_uploader("Carregar o CSV")
+    uploaded_file = st.file_uploader("Upload the CSV")
     if uploaded_file is not None:
-        dt = pd.read_csv(uploaded_file, names=['nm_item'], header=None)
-        btn_predict = st.button("REALIZAR CATALOGAÇÃO")
+        dt = pd.read_csv(uploaded_file, names=['item_name'], header=None)
+        btn_predict = st.button("PERFORM CATALOGING")
         if btn_predict:
             def classification(dt):
                 df = pd.DataFrame(
                     [],
                     columns=[
-                        'nm_item',
-                        'segmento',
-                        'categoria',
-                        'subcategoria',
-                        'nm_product',
+                        'item_name',
+                        'segment',
+                        'category',
+                        'subcategory',
+                        'product_name',
                     ],
                 )
                 my_bar = st.progress(0)
                 for index, text in dt.iterrows():
-                    text_processed = pre_process.transform(text['nm_item'])
+                    text_processed = pre_process.transform(text['item_name'])
                     seq = tokenizer.texts_to_sequences([text_processed])
                     padded = pad_sequences(seq, maxlen=MAX_SEQUENCE_LENGTH)
                     pred = model.predict(padded)
                     df = df.append(
                         {
-                            'nm_item': text['nm_item'],
-                            'segmento': label_segmento[np.argmax(pred[0])],
-                            'categoria': label_categoria[np.argmax(pred[1])],
-                            'subcategoria': label_subcategoria[np.argmax(pred[2])],
-                            'nm_product': label_produto[np.argmax(pred[3])],
+                            'item_name': text['nm_item'],
+                            'segment': label_segment[np.argmax(pred[0])],
+                            'category': label_category[np.argmax(pred[1])],
+                            'subcategory': label_subcategory[np.argmax(pred[2])],
+                            'product_name': label_product[np.argmax(pred[3])],
                         },
                         ignore_index=True,
                     )
