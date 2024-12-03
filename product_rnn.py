@@ -4,7 +4,7 @@ import pandas as pd
 import json
 import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-import tensorflow_addons as tfa
+from tensorflow.keras.preprocessing.text import tokenizer_from_json
 from pre_treatment_product import pre_process_text
 import pickle
 from PIL import Image
@@ -22,16 +22,17 @@ label_categoria = np.array(produtos['categoria'])
 label_subcategoria = np.array(produtos['subcategoria'])
 label_produto = np.array(produtos['nm_product'])
 
-# Abrindo o Tokenizador
-with open('tokenizer.pickle', 'rb') as handle:
-    tokenizer = pickle.load(handle)
+# Load the tokenizer
+with open('tokenizer.json', 'r') as json_file:
+    tokenizer_json = json_file.read()  # Read the JSON string
+tokenizer = tokenizer_from_json(json.loads(tokenizer_json)) 
 
 # carregando o modelo
 
 
-@st.cache_data(allow_output_mutation=True)
+@st.cache_resource
 def load_model():
-    model = tf.keras.models.load_model("full_MultiModel2.h5")
+    model = tf.keras.models.load_model("LSTModel.keras")
     return model
 
 
